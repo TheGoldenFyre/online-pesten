@@ -32,7 +32,8 @@ class Game {
     constructor(playerCount) {
         this.deckCount = 1;
         this.playerCount = playerCount
-        this.cards = this.SetupCards() 
+        this.cards = this.SetupCards()
+        this.stack = [] 
         this.startingCards = 7
     }
 
@@ -42,6 +43,10 @@ class Game {
             playerCards.push(this.cards.splice(0, this.startingCards))
         }
         this.playerCards = playerCards
+    }
+
+    Move(player, index) {
+        this.stack.push(this.playerCards[player].splice(index, 1)[0])
     }
 
     SetupCards() {

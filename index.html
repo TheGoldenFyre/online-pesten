@@ -32,7 +32,6 @@
                 gs = data.GS
                 playerNumber = data.ID
                 $("#ID").text(`Player: ${playerNumber}`)
-                socket.emit("make-move", lobbyID)  
             })
 
             socket.on("game-start", (GS) => {
@@ -40,8 +39,20 @@
                 console.log(gs)
                 gs.playerCards[playerNumber - 1].forEach((card, i) => {
                     $("tr").append(`<td id="card${i}">${card.value} of ${card.suitString}s</td>`)
+                    $(`#card${i}`).click(() => 
+                        socket.emit("make-move", {
+                            lobbyID: lobbyID,
+                            player: playerNumber - 1,
+                            index: i
+                        })
+                    )
                 })
                 
+            })
+
+            socket.on("move-made", (GS) => {
+                gs = GS
+                console.log(gs)
             })
 
             socket.on("connection-deny", () => {

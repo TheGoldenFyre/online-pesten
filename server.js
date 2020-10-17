@@ -62,8 +62,9 @@ io.on('connection', (socket) => {
         io.to(lobbyID).emit("game-start", games[lobbyID.toString()])
     })
 
-    socket.on("make-move", (lobbyID) => {
-        io.to(lobbyID).emit("aaa")
+    socket.on("make-move", (data) => {
+        games[data.lobbyID.toString()].Move(data.player, data.index)
+        io.to(data.lobbyID.toString()).emit("move-made", games[data.lobbyID.toString()])
     })
 
     socket.on("disconnect", () => {
