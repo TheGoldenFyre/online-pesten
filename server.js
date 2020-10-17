@@ -3,6 +3,7 @@ let express = require("express")
 let app = express()
 let http = require("http").createServer(app)
 let io = require("socket.io")(http)
+let Game = require("./game-class");
 
 const PORT = 80
 
@@ -20,13 +21,20 @@ app.get("/lobby/:lobbyID", (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on("connection-request", (lobbyID) => {
-        console.log(`LobbyId: ${lobbyID}`)
         if (games[`${lobbyID}`] != null && io.sockets.adapter.rooms[`${lobbyID}`].length < maxPlayers) {
+            console.log("Joining game...")
             socket.join(`${lobbyID}`)
-            socket.emit("connection-accept", lobbyID)
+            socket.emit("connection-accept", {ID: lobbyID, GS: games[`${lobbyID}`]})
         } else {
-            socket.emit("connection-deny")
+            console.log("Creating new game...")
+            games[`${lobbyID}`] = new Game()
+            socket.join(`${lobbyID}`)
+            socket.emit("connection-accept", {ID: lobbyID, GS: games[`${lobbyID}`]})
         }
+    })
+
+    socket.on("disconnecting", () => {
+        
     })
 
     socket.on("make-move", (lobbyID) => {

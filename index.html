@@ -6,13 +6,16 @@
 <body>
     <script>
         $(document).ready(() => {
-            var socket = io();
+            var socket = io()
+            let isHost = false
+            let isAccepted = false
             let lobbyID = window.location.href.split("/").slice(-1).pop()
 
             socket.emit("connection-request", lobbyID)
             
-            socket.on("connection-accept", () => {
-                console.log("Lobby ID accepted")
+            socket.on("connection-accept", (data) => {
+                isAccepted = true
+                console.log(data.gs)
                 socket.emit("make-move", lobbyID)  
             })
 
