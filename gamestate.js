@@ -29,23 +29,38 @@ class Card {
 }
 
 class Game {
-    constructor() {
+    constructor(playerCount) {
         this.deckCount = 1;
+        this.playerCount = playerCount
         this.cards = this.SetupCards() 
     }
 
     SetupCards() {
         let arr = []
 
-        for (let i = 0; i < 4; i++) {
-            for (let j = 1; j < 14; j++) {
-                arr.push(new Card(j, i))
+        for (let d = 0; d < this.deckCount; d++) {
+            for (let i = 0; i < 4; i++) {
+                for (let j = 1; j < 14; j++) {
+                    arr.push(new Card(j, i))
+                }
             }
+    
+            arr.push(new Card(1, 4), new Card(1, 4))
+        }
+        arr = this.ShuffleCards(arr)
+        return arr
+    }
+
+    ShuffleCards(arr) {
+        let length = arr.length;
+        let ret = [];
+
+        for (let i = 0; i < length; i++) {
+            let r = Math.round(Math.floor(Math.random() * (arr.length)));
+            ret.push(arr.splice(r, 1)[0])
         }
 
-        arr.push(new Card(1, 4), new Card(1, 4))
-
-        return arr
+        return ret;
     }
 }
 

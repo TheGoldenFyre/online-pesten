@@ -15,6 +15,7 @@
             
             socket.on("connection-accept", (data) => {
                 isAccepted = true
+                console.log(`Player: ${data.ID}`)
                 console.log(data.GS)
                 socket.emit("make-move", lobbyID)  
             })
