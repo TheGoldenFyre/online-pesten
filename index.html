@@ -5,6 +5,7 @@
 
 <body>
     <h1 id="ID">Player: 0</h1>
+    <h2>Current top: </h2>
     <button>Start</button>
     <table>
         <tr>
@@ -23,18 +24,20 @@
 
             gs.playerCards[playerNumber - 1].forEach((card, i) => {
                 $("tr").append(`<td id="card${i}">${card.value} of ${card.suitString}s</td>`)
-                $(`#card${i}`).click(() => 
-                    socket.emit("make-move", {
+                $(`#card${i}`).click(() => {
+                    socket.emit("try-move", {
                         lobbyID: lobbyID,
-                        player: playerNumber - 1,
-                        index: i
+                        pCard: card,
+                        sCard: gs.stack[gs.stack.length - 1],
+                        index: i,
+                        pIndex: playerNumber - 1
                     })
-                )
+                })
             })
-        }
 
-        function isValidMove(index) {
-            
+            let c = gs.stack[gs.stack.length - 1]
+
+            $("h2").text(`Current: ${c.value} of ${c.suitString}s`)
         }
 
         $(document).ready(() => {

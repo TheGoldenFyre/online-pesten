@@ -34,15 +34,19 @@ class Game {
         this.playerCount = playerCount
         this.cards = this.SetupCards()
         this.stack = [] 
+        this.playerCards = []
+        this.gameRules = this.SetupGameRules()
         this.startingCards = 7
     }
 
     Start() {
-        let playerCards = []
+        let pCards = []
         for (let i = 0; i < this.playerCount; i++) {
-            playerCards.push(this.cards.splice(0, this.startingCards))
+            pCards.push(this.cards.splice(0, this.startingCards))
         }
-        this.playerCards = playerCards
+        this.playerCards = pCards
+
+        this.stack.push(this.cards[this.cards.length - 1])
     }
 
     Move(player, index) {
@@ -62,6 +66,65 @@ class Game {
             arr.push(new Card(1, 4), new Card(1, 4))
         }
         arr = this.ShuffleCards(arr)
+        return arr
+    }
+
+    SetupGameRules() {
+        let arr = []
+
+
+        //Matching suits
+        arr.push(function (pCard, sCard) {
+            if (pCard.suit == sCard.suit) { 
+                return true;
+            }
+            return false
+        })
+
+        //Matching numbers
+        arr.push(function (pCard, sCard) {
+            if (pCard.value == sCard.value) { 
+                return true;
+            }
+        })
+
+        //Jack on everything
+        arr.push(function (pCard, sCard) {
+            if (pCard.value == 11) { 
+                return true;
+            }
+            return false
+        })
+
+        //Joker on everything
+        arr.push(function(pCard, sCard) {
+            if (pCard.suit == 4) {
+                return true
+            }
+            return false    
+        })
+
+        //2's, aces and jokers are allowed to be played on top of each other
+        arr.push(function(pCard, sCard) {
+            //2 on...
+            if ( (pCard.value == 2 && sCard.value == 1 ) || (pCard.value == 2 && sCard.suit == 4) ) {
+                return true
+            }
+                
+            //ace on...
+            if ( (pCard.value == 1 && sCard.value == 2 ) || (pCard.value == 1 && sCard.suit == 4) ) {
+                return true
+            }
+                
+            //joker on...
+            if ( (pCard.suit == 4 && sCard.value == 2 ) || (pCard.suit == 4 && sCard.value == 1) ) {
+                return true
+            }
+                
+
+            return false
+        })
+
         return arr
     }
 

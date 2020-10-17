@@ -4,6 +4,7 @@ let app = express()
 let http = require("http").createServer(app)
 let io = require("socket.io")(http)
 let Game = require("./gamestate");
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants")
 
 const PORT = 80
 
@@ -57,15 +58,29 @@ io.on('connection', (socket) => {
         };
     })
 
+    socket.on("try-move", (data) => {
+        let b = false
+        let gr = games[data.lobbyID.toString()].gameRules
+        
+        for (let i = 0; i < gr.length; i++) {
+            if (gr[i](data.pCard, data.sCard))
+                b = true
+        }
+
+        if (b) {
+            games[data.lobbyID.toString()].Move(data.pIndex, data.index)
+            io.to(data.lobbyID.toString()).emit("move-made", games[data.lobbyID.toString()])
+        }
+    })
+
     socket.on("start-game", (lobbyID) => {
         games[lobbyID.toString()].Start()
         io.to(lobbyID).emit("game-start", games[lobbyID.toString()])
     })
 
-    socket.on("make-move", (data) => {
-        games[data.lobbyID.toString()].Move(data.player, data.index)
-        io.to(data.lobbyID.toString()).emit("move-made", games[data.lobbyID.toString()])
-    })
+    //socket.on("make-move", (data) => {
+        
+    //})
 
     socket.on("disconnect", () => {
         console.log("Byebye")
