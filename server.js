@@ -21,7 +21,7 @@ app.get("/lobby/:lobbyID", (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on("connection-request", (lobbyID) => {
-        if (games[`${lobbyID}`] != null && io.sockets.adapter.rooms[`${lobbyID}`].length < maxPlayers) {
+        if (games[`${lobbyID}`] != null && io.sockets.adapter.rooms[`${lobbyID}`] != undefined && io.sockets.adapter.rooms[`${lobbyID}`].length < maxPlayers ) {
             console.log("Joining game...")
             socket.join(`${lobbyID}`)
             socket.emit("connection-accept", {ID: lobbyID, GS: games[`${lobbyID}`]})
@@ -34,7 +34,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on("disconnecting", () => {
-        
+        let lobbyID = Object.keys(socket.rooms)[0].toString()
+
+        if( io.sockets.adapter.rooms[lobbyID].length == 1 ) {
+            games[lobbyID] = null;
+        };
     })
 
     socket.on("make-move", (lobbyID) => {
