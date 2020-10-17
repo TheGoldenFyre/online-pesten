@@ -1,0 +1,28 @@
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <script>
+        $(document).ready(() => {
+            var socket = io();
+            let lobbyID = window.location.href.split("/").slice(-1).pop()
+
+            socket.emit("connection-request", lobbyID)
+            
+            socket.on("connection-accept", () => {
+                console.log("Lobby ID accepted")
+                socket.emit("make-move", lobbyID)  
+            })
+
+            socket.on("aaa", () => {
+                console.log("Move made")
+            })
+
+            socket.on("connection-deny", () => {
+                console.log("Invalid lobby ID")
+            })
+        })    
+    </script>
+</body>
