@@ -21,18 +21,34 @@ app.get("/lobby/:lobbyID", (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on("connection-request", (lobbyID) => {
-        if (games[`${lobbyID}`] != null && io.sockets.adapter.rooms[`${lobbyID}`] != undefined && io.sockets.adapter.rooms[`${lobbyID}`].length < maxPlayers ) {
-            console.log("Joining game...")
-            socket.join(`${lobbyID}`)
-            socket.emit("connection-accept", {ID: lobbyID, GS: games[`${lobbyID}`]})
-        } else {
+        let playerCount = 0
+        if (io.sockets.adapter.rooms[`${lobbyID}`] != undefined) {
+
+            playerCount = io.sockets.adapter.rooms[`${lobbyID}`].length + 1
+
+            if (games[`${lobbyID}`] != null) { 
+                if ( playerCount <= maxPlayers ) {
+                    console.log("Joining game...")
+                    socket.join(`${lobbyID}`)
+                    socket.emit("connection-accept", {ID: playerCount, GS: games[`${lobbyID}`]})
+                    games[`${lobbyID}`] = new Game(playerCount)
+                } 
+                else {
+                    console.log("Game full")
+                }
+            } 
+        }
+        else {
+            playerCount = 1
+            
             console.log("Creating new game...")
-            games[`${lobbyID}`] = new Game()
+            games[`${lobbyID}`] = new Game(playerCount)
             socket.join(`${lobbyID}`)
-            socket.emit("connection-accept", {ID: lobbyID, GS: games[`${lobbyID}`]})
+            socket.emit("connection-accept", {ID: playerCount, GS: games[`${lobbyID}`]})
         }
     })
 
+    //TODO: fix player numbering after disconnect
     socket.on("disconnecting", () => {
         let lobbyID = Object.keys(socket.rooms)[0].toString()
 
