@@ -37,6 +37,8 @@ class Game {
         this.playerCards = []
         this.gameRules = this.SetupGameRules()
         this.startingCards = 7
+        this.currentTurn = 1
+        this.goingCW = true //1 for cw, -1 for ccw
     }
 
     Start() {
@@ -63,7 +65,7 @@ class Game {
                 }
             }
     
-            arr.push(new Card(1, 4), new Card(1, 4))
+            arr.push(new Card(14, 4), new Card(14, 4))
         }
         arr = this.ShuffleCards(arr)
         return arr
@@ -96,9 +98,9 @@ class Game {
             return false
         })
 
-        //Joker on everything
+        //Joker on everything & everything on joker
         arr.push(function(pCard, sCard) {
-            if (pCard.suit == 4) {
+            if (pCard.suit == 4 || sCard.suit == 4) {
                 return true
             }
             return false    
@@ -126,6 +128,56 @@ class Game {
         })
 
         return arr
+    }
+
+    nextTurn(card) {
+        let cw, ccw;
+            if (this.currentTurn + 1 > this.playerCount)
+                cw = 1
+            else 
+                cw = this.currentTurn + 1
+            if (this.currentTurn - 1 < 1)
+                ccw = this.playerCount
+            else 
+                ccw = this.currentTurn - 1
+
+        switch(card.value) {
+            case 7:
+            case 13:
+                break;
+            case 8:
+                if(this.playerCount == 2) {
+                    break
+                } else {
+                    if (this.goingCW) {
+                        if (this.currentTurn + 1 == this.playerCount) {
+                            this.currentTurn = 1
+                        }
+                        else if (this.currentTurn + 2 > this.playerCount) {
+                            this.currentTurn = 2
+                        } else {
+                            this.currentTurn += 2
+                        }
+                    } else {
+                        if (this.currentTurn == 1) {
+                            this.currentTurn = this.playerCount - 1
+                        } else if (this.currentTurn == 2) {
+                            this.currentTurn = this.playerCount
+                        } else {
+                            this.currentTurn -= 2
+                        }
+                    }
+                }
+            case 1:
+                this.goingCW = !this.goingCW
+            default:
+                this.currentTurn = this.goingCW ? cw : ccw
+                break;
+        }
+    }
+
+    GetCard(count, player) {
+        this.cards.splice(0, count).forEach((c) => this.playerCards[player].push(c))
     }
 
     ShuffleCards(arr) {

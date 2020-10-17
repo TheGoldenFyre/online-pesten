@@ -6,7 +6,8 @@
 <body>
     <h1 id="ID">Player: 0</h1>
     <h2>Current top: </h2>
-    <button>Start</button>
+    <h3>Current turn: </h3>
+    <button id="start">Start</button><button id="draw">Draw Card</button>
     <table>
         <tr>
             <td>Cards: </td>
@@ -15,29 +16,34 @@
     <script>
         let gs = {}
         let playerNumber = 0
+        let currentTurn = 0
         let isHost = false
         let isAccepted = false
         let lobbyID
 
-        function updateDisplay(socket) {
+        function update(socket, GS) {
+            gs = GS
             $("td").remove()
+            currentTurn = gs.currentTurn
 
             gs.playerCards[playerNumber - 1].forEach((card, i) => {
                 $("tr").append(`<td id="card${i}">${card.value} of ${card.suitString}s</td>`)
-                $(`#card${i}`).click(() => {
-                    socket.emit("try-move", {
-                        lobbyID: lobbyID,
-                        pCard: card,
-                        sCard: gs.stack[gs.stack.length - 1],
-                        index: i,
-                        pIndex: playerNumber - 1
+                if (currentTurn == playerNumber) {
+                    $(`#card${i}`).click(() => {
+                        socket.emit("try-move", {
+                            lobbyID: lobbyID,
+                            pCard: card,
+                            sCard: gs.stack[gs.stack.length - 1],
+                            index: i,
+                            pIndex: playerNumber - 1,
+                        })
                     })
-                })
+                }
             })
 
             let c = gs.stack[gs.stack.length - 1]
-
-            $("h2").text(`Current: ${c.value} of ${c.suitString}s`)
+            $("h2").text(`Current top: ${c.value} of ${c.suitString}s`)
+            $("h3").text(`Current turn: ${gs.currentTurn}`)
         }
 
         $(document).ready(() => {
@@ -56,26 +62,23 @@
                 $("#ID").text(`Player: ${playerNumber}`)
             })
 
-            socket.on("game-start", (GS) => {
-                gs = GS
-                console.log(gs)
-                
-                updateDisplay(socket)
-            })
-
-            socket.on("move-made", (GS) => {
-                gs = GS
-                console.log(gs)
-
-                updateDisplay(socket)
+            socket.on("update", (GS) => {
+                update(socket, GS)
             })
 
             socket.on("connection-deny", () => {
                 console.log("Invalid lobby ID")
             })
 
-            $('button').click(() => {
+            $('#start').click(() => {
                 socket.emit('start-game', lobbyID);
+            });
+
+            $('#draw').click(() => {
+                socket.emit('draw-card', {
+                    lobbyID: lobbyID,
+                    pIndex: playerNumber - 1
+                });
             });
         })   
     </script>
