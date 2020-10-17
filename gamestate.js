@@ -44,8 +44,20 @@ class Game {
         }
 
         arr.push(new Card(1, 4), new Card(1, 4))
-
+        arr = this.ShuffleCards(arr)
         return arr
+    }
+
+    ShuffleCards(arr) {
+        let length = arr.length;
+        let ret = [];
+
+        for (let i = 0; i < length; i++) {
+            let r = Math.round(Math.floor(Math.random() * (arr.length)));
+            ret.push(arr.splice(r, 1)[0])
+        }
+
+        return ret;
     }
 }
 
