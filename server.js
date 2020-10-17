@@ -57,6 +57,11 @@ io.on('connection', (socket) => {
         };
     })
 
+    socket.on("start-game", (lobbyID) => {
+        games[lobbyID.toString()].Start()
+        io.to(lobbyID).emit("game-start", games[lobbyID.toString()])
+    })
+
     socket.on("make-move", (lobbyID) => {
         io.to(lobbyID).emit("aaa")
     })

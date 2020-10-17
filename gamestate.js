@@ -33,6 +33,15 @@ class Game {
         this.deckCount = 1;
         this.playerCount = playerCount
         this.cards = this.SetupCards() 
+        this.startingCards = 7
+    }
+
+    Start() {
+        let playerCards = []
+        for (let i = 0; i < this.playerCount; i++) {
+            playerCards.push(this.cards.splice(0, this.startingCards))
+        }
+        this.playerCards = playerCards
     }
 
     SetupCards() {

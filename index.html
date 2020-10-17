@@ -4,11 +4,23 @@
 </head>
 
 <body>
+    <h1 id="ID">Player: 0</h1>
+    <button>Start</button>
+    <table>
+        <tr>
+            <td>Cards: </td>
+        </tr>
+    </table>
     <script>
+        let gs = {}
+        let playerNumber = 0
+        let isHost = false
+        let isAccepted = false
+
+
         $(document).ready(() => {
             var socket = io()
-            let isHost = false
-            let isAccepted = false
+            
             let lobbyID = window.location.href.split("/").slice(-1).pop()
 
             socket.emit("connection-request", lobbyID)
@@ -17,16 +29,28 @@
                 isAccepted = true
                 console.log(`Player: ${data.ID}`)
                 console.log(data.GS)
+                gs = data.GS
+                playerNumber = data.ID
+                $("#ID").text(`Player: ${playerNumber}`)
                 socket.emit("make-move", lobbyID)  
             })
 
-            socket.on("aaa", () => {
-                console.log("Move made")
+            socket.on("game-start", (GS) => {
+                gs = GS
+                console.log(gs)
+                gs.playerCards[playerNumber - 1].forEach((card, i) => {
+                    $("tr").append(`<td id="card${i}">${card.value} of ${card.suitString}s</td>`)
+                })
+                
             })
 
             socket.on("connection-deny", () => {
                 console.log("Invalid lobby ID")
             })
-        })    
+
+            $('button').click(() => {
+                socket.emit('start-game', lobbyID);
+            });
+        })   
     </script>
 </body>
