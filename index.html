@@ -1,11 +1,21 @@
 <head>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
 </head>
 
 <body>
     <h1 id="ID">Player: 0</h1>
-    <h2>Current top: </h2>
+    <div>
+        <h2>Current top: </h2> 
+        <img id="topImg" src="">
+    </div>
     <h3>Current turn: </h3>
     <button id="start">Start</button><button id="draw">Draw Card</button>
     <table>
@@ -27,7 +37,14 @@
             currentTurn = gs.currentTurn
 
             gs.playerCards[playerNumber - 1].forEach((card, i) => {
-                $("tr").append(`<td id="card${i}">${card.value} of ${card.suitString}s</td>`)
+                $("tr").append(`<td id="card${i}"><img src="../${card.suit}-${card.value}.png">${card.value}${card.suitString}</td>`)
+                    
+                $(`#card${i}`).css({
+                    "height": "234", 
+                    "width": '167',
+                })
+
+                console.log({x: (card.value <= 13) ? card.value * 167 : 0, y: card.suit * 234})
                 if (currentTurn == playerNumber) {
                     $(`#card${i}`).click(() => {
                         socket.emit("try-move", {
@@ -41,8 +58,11 @@
                 }
             })
 
+
+
             let c = gs.stack[gs.stack.length - 1]
             $("h2").text(`Current top: ${c.value} of ${c.suitString}s`)
+            $("#topImg").attr("src", `../${c.suit}-${c.value}.png`);
             $("h3").text(`Current turn: ${gs.currentTurn}`)
         }
 

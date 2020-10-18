@@ -1,25 +1,25 @@
 class Card {
     //Card type
     //Value: 1-13, ace is 1
-    //Suit: 0-4, hearts, diamonds, clubs, spades, joker
+    //Suit: 0-4, klaver, diamonds, harten, schoppen, joker
     constructor(value, suit) {
         this.value = value
         this.suit = suit
         switch(suit){
             case 0:
-                this.suitString = "heart"
+                this.suitString = "♣"
                 break;
             case 1:
-                this.suitString = "diamond"
+                this.suitString = "♢"
                 break;
             case 2:
-                this.suitString = "club"
+                this.suitString = "♡"
                 break;
             case 3:
-                this.suitString = "spade"
+                this.suitString = "♠"
                 break;
             case 4:
-                this.suitString = "joker"
+                this.suitString = "🃏"
         }
     }
 
@@ -177,7 +177,13 @@ class Game {
     }
 
     GetCard(count, player) {
-        this.cards.splice(0, count).forEach((c) => this.playerCards[player].push(c))
+        for (let i = 0; i < count; i++) {
+            if (this.cards.length == 0) {
+                this.cards = this.ShuffleCards(this.stack.splice(0, this.stack.length - 2))
+            }
+
+            this.playerCards[player].push(this.cards.splice(0, 1)[0])
+        }
     }
 
     ShuffleCards(arr) {
