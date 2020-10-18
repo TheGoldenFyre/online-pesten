@@ -32,7 +32,27 @@ class Game {
     constructor(playerCount) {
         this.deckCount = 1;
         this.playerCount = playerCount
-        this.cards = this.SetupCards() 
+        this.cards = this.SetupCards()
+        this.stack = [] 
+        this.playerCards = []
+        this.gameRules = this.SetupGameRules()
+        this.startingCards = 7
+        this.currentTurn = 1
+        this.goingCW = true //1 for cw, -1 for ccw
+    }
+
+    Start() {
+        let pCards = []
+        for (let i = 0; i < this.playerCount; i++) {
+            pCards.push(this.cards.splice(0, this.startingCards))
+        }
+        this.playerCards = pCards
+
+        this.stack.push(this.cards[this.cards.length - 1])
+    }
+
+    Move(player, index) {
+        this.stack.push(this.playerCards[player].splice(index, 1)[0])
     }
 
     SetupCards() {
@@ -45,10 +65,119 @@ class Game {
                 }
             }
     
-            arr.push(new Card(1, 4), new Card(1, 4))
+            arr.push(new Card(14, 4), new Card(14, 4))
         }
         arr = this.ShuffleCards(arr)
         return arr
+    }
+
+    SetupGameRules() {
+        let arr = []
+
+
+        //Matching suits
+        arr.push(function (pCard, sCard) {
+            if (pCard.suit == sCard.suit) { 
+                return true;
+            }
+            return false
+        })
+
+        //Matching numbers
+        arr.push(function (pCard, sCard) {
+            if (pCard.value == sCard.value) { 
+                return true;
+            }
+        })
+
+        //Jack on everything
+        arr.push(function (pCard, sCard) {
+            if (pCard.value == 11) { 
+                return true;
+            }
+            return false
+        })
+
+        //Joker on everything & everything on joker
+        arr.push(function(pCard, sCard) {
+            if (pCard.suit == 4 || sCard.suit == 4) {
+                return true
+            }
+            return false    
+        })
+
+        //2's, aces and jokers are allowed to be played on top of each other
+        arr.push(function(pCard, sCard) {
+            //2 on...
+            if ( (pCard.value == 2 && sCard.value == 1 ) || (pCard.value == 2 && sCard.suit == 4) ) {
+                return true
+            }
+                
+            //ace on...
+            if ( (pCard.value == 1 && sCard.value == 2 ) || (pCard.value == 1 && sCard.suit == 4) ) {
+                return true
+            }
+                
+            //joker on...
+            if ( (pCard.suit == 4 && sCard.value == 2 ) || (pCard.suit == 4 && sCard.value == 1) ) {
+                return true
+            }
+                
+
+            return false
+        })
+
+        return arr
+    }
+
+    nextTurn(card) {
+        let cw, ccw;
+            if (this.currentTurn + 1 > this.playerCount)
+                cw = 1
+            else 
+                cw = this.currentTurn + 1
+            if (this.currentTurn - 1 < 1)
+                ccw = this.playerCount
+            else 
+                ccw = this.currentTurn - 1
+
+        switch(card.value) {
+            case 7:
+            case 13:
+                break;
+            case 8:
+                if(this.playerCount == 2) {
+                    break
+                } else {
+                    if (this.goingCW) {
+                        if (this.currentTurn + 1 == this.playerCount) {
+                            this.currentTurn = 1
+                        }
+                        else if (this.currentTurn + 2 > this.playerCount) {
+                            this.currentTurn = 2
+                        } else {
+                            this.currentTurn += 2
+                        }
+                    } else {
+                        if (this.currentTurn == 1) {
+                            this.currentTurn = this.playerCount - 1
+                        } else if (this.currentTurn == 2) {
+                            this.currentTurn = this.playerCount
+                        } else {
+                            this.currentTurn -= 2
+                        }
+                    }
+                }
+            case 1:
+                this.goingCW = !this.goingCW
+            default:
+                this.currentTurn = this.goingCW ? cw : ccw
+                break;
+        }
+    }
+
+    GetCard(count, player) {
+        this.cards.splice(0, count).forEach((c) => this.playerCards[player].push(c))
     }
 
     ShuffleCards(arr) {

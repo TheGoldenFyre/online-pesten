@@ -4,12 +4,52 @@
 </head>
 
 <body>
+    <h1 id="ID">Player: 0</h1>
+    <h2>Current top: </h2>
+    <h3>Current turn: </h3>
+    <button id="start">Start</button><button id="draw">Draw Card</button>
+    <table>
+        <tr>
+            <td>Cards: </td>
+        </tr>
+    </table>
     <script>
+        let gs = {}
+        let playerNumber = 0
+        let currentTurn = 0
+        let isHost = false
+        let isAccepted = false
+        let lobbyID
+
+        function update(socket, GS) {
+            gs = GS
+            $("td").remove()
+            currentTurn = gs.currentTurn
+
+            gs.playerCards[playerNumber - 1].forEach((card, i) => {
+                $("tr").append(`<td id="card${i}">${card.value} of ${card.suitString}s</td>`)
+                if (currentTurn == playerNumber) {
+                    $(`#card${i}`).click(() => {
+                        socket.emit("try-move", {
+                            lobbyID: lobbyID,
+                            pCard: card,
+                            sCard: gs.stack[gs.stack.length - 1],
+                            index: i,
+                            pIndex: playerNumber - 1,
+                        })
+                    })
+                }
+            })
+
+            let c = gs.stack[gs.stack.length - 1]
+            $("h2").text(`Current top: ${c.value} of ${c.suitString}s`)
+            $("h3").text(`Current turn: ${gs.currentTurn}`)
+        }
+
         $(document).ready(() => {
             var socket = io()
-            let isHost = false
-            let isAccepted = false
-            let lobbyID = window.location.href.split("/").slice(-1).pop()
+            
+            lobbyID = window.location.href.split("/").slice(-1).pop()
 
             socket.emit("connection-request", lobbyID)
             
@@ -17,16 +57,29 @@
                 isAccepted = true
                 console.log(`Player: ${data.ID}`)
                 console.log(data.GS)
-                socket.emit("make-move", lobbyID)  
+                gs = data.GS
+                playerNumber = data.ID
+                $("#ID").text(`Player: ${playerNumber}`)
             })
 
-            socket.on("aaa", () => {
-                console.log("Move made")
+            socket.on("update", (GS) => {
+                update(socket, GS)
             })
 
             socket.on("connection-deny", () => {
                 console.log("Invalid lobby ID")
             })
-        })    
+
+            $('#start').click(() => {
+                socket.emit('start-game', lobbyID);
+            });
+
+            $('#draw').click(() => {
+                socket.emit('draw-card', {
+                    lobbyID: lobbyID,
+                    pIndex: playerNumber - 1
+                });
+            });
+        })   
     </script>
 </body>
