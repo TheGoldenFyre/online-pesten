@@ -99,7 +99,7 @@
                     pIndex: playerNumber - 1
                 });
             });
-            $('#draw').click(() => {
+            $('#endTurn').click(() => {
                 if(currentTurn == playerNumber)
                     socket.emit('end-turn', lobbyID);
             });
