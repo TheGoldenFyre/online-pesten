@@ -21,6 +21,7 @@ class Card {
             case 4:
                 this.suitString = "🃏"
         }
+        this.isValidMove = false
     }
 
     toString() {
@@ -52,6 +53,7 @@ class Game {
         this.playerCards = pCards
         this.stack = []
         this.stack.push(this.cards.splice(0,1)[0])
+        this.SetValidMoves()
     }
 
     Move(player, index) {
@@ -75,9 +77,37 @@ class Game {
         return arr
     }
 
+    CheckValidMove(card) {
+        let b = false
+        for (let i = 0; i < this.gameRules.length; i++) {
+            if (this.gameRules[i](card, this.stack[this.stack.length - 1]))
+                b = true
+        }
+        return b
+    }
+
+    //Checks the validity of the cards in a players hand
+    SetValidMoves() {    
+        for (let i = 0; i < this.playerCards[this.currentTurn - 1].length; i++) {
+            this.playerCards[this.currentTurn - 1][i].isValidMove = this.CheckValidMove(this.playerCards[this.currentTurn - 1][i])
+        }
+    }
+
     //Allows the changing of which cards are allowed to be placed on which other cards 
     SetupGameRules() {
         let arr = []
+
+        arr.push(function (pCard, sCard) {
+            if (cardsToDraw > 0) {
+                if (sCard.value == 1 || sCard.value == 2 || sCard.value == 14) {
+                    if (pCard.value == 1 || pCard.value == 2 || pCard.value == 14) {
+                        return true;
+                    }
+                }
+            }
+
+            return false
+        })
 
         //Matching suits
         arr.push(function (pCard, sCard) {

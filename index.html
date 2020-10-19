@@ -44,18 +44,16 @@
                     "width": '167',
                 })
 
-                if (currentTurn == playerNumber) {
-                    $(`#card${i}`).click(() => {
-                        if (gs.cardsToDraw < 1)
-                            socket.emit("try-move", {
-                                lobbyID: lobbyID,
-                                pCard: card,
-                                sCard: gs.stack[gs.stack.length - 1],
-                                index: i,
-                                pIndex: playerNumber - 1,
-                            })
-                    })
-                }
+                $(`#card${i}`).click(() => {
+                    if (gs.cardsToDraw < 1 && card.isValidMove == true)
+                        socket.emit("do-move", {
+                            lobbyID: lobbyID,
+                            pCard: card,
+                            sCard: gs.stack[gs.stack.length - 1],
+                            index: i,
+                            pIndex: playerNumber - 1,
+                        })
+                })
             })
 
 

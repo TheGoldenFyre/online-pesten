@@ -59,21 +59,13 @@ io.on('connection', (socket) => {
         };
     })
 
-    socket.on("try-move", (data) => {
-        let b = false
+    socket.on("do-move", (data) => {
         let li = data.lobbyID.toString()
-        let gr = games[li].gameRules
-        
-        for (let i = 0; i < gr.length; i++) {
-            if (gr[i](data.pCard, data.sCard))
-                b = true
-        }
 
-        if (b) {
-            games[li].nextTurn(data.pCard, data.cTurn)
-            games[li].Move(data.pIndex, data.index)
-            io.to(li).emit("update", games[li])
-        }
+        games[li].nextTurn(data.pCard, data.cTurn)
+        games[li].Move(data.pIndex, data.index)
+        games[li].setValidMoves()
+        io.to(li).emit("update", games[li])
     })
 
     socket.on("draw-card", (data) => {
