@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
         io.to(lobbyID).emit("update", games[lobbyID.toString()])
     })
 
-    socket.on("end-turn", (data) => {
+    socket.on("end-turn", (lobbyID) => {
         games[lobbyID.toString()].EndTurn()
         io.to(lobbyID).emit("update", games[lobbyID.toString()])
     })
