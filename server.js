@@ -4,12 +4,13 @@ let app = express()
 let http = require("http").createServer(app)
 let io = require("socket.io")(http)
 let Game = require("./gamestate");
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants")
 
 const PORT = 80
 
 let games = {}
 const maxPlayers = 4
+
+app.use(express.static('public'))
 
 app.get("/", (req, res) => {
     res.send("lmao")
