@@ -1,0 +1,25 @@
+{
+  "name": "online-pesten",
+  "version": "1.0.0",
+  "description": "Online pesten",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheGoldenFyre/online-pesten.git"
+  },
+  "author": "Thomas van der Plas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheGoldenFyre/online-pesten/issues"
+  },
+  "homepage": "https://github.com/TheGoldenFyre/online-pesten#readme"
+}
