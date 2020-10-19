@@ -39,6 +39,7 @@ class Game {
         this.startingCards = 7
         this.currentTurn = 1
         this.goingCW = true //1 for cw, -1 for ccw
+        this.cardsToDraw = 0
     }
 
     Start() {
@@ -57,6 +58,7 @@ class Game {
         this.stack.push(this.playerCards[player].splice(index, 1)[0])
     }
 
+    //Returns a fully shuffled deck of cards
     SetupCards() {
         let arr = []
 
@@ -73,9 +75,9 @@ class Game {
         return arr
     }
 
+    //Allows the changing of which cards are allowed to be placed on which other cards 
     SetupGameRules() {
         let arr = []
-
 
         //Matching suits
         arr.push(function (pCard, sCard) {
@@ -132,6 +134,7 @@ class Game {
         return arr
     }
 
+    //Handle a end-turn event by changing modifying the currentTurn
     EndTurn() {
         let cw, ccw;
         if (this.currentTurn + 1 > this.playerCount)
@@ -146,6 +149,7 @@ class Game {
         this.currentTurn = this.goingCW ? cw : ccw
     }
 
+    //Determine next turn based on card placed
     nextTurn(card) {
         let cw, ccw;
             if (this.currentTurn + 1 > this.playerCount)
@@ -189,6 +193,11 @@ class Game {
                 if (this.playerCount == 2) {
                     break;
                 }
+            //Handles jokers and 2s
+            case 2:
+                this.cardsToDraw += 2
+            case 14:
+                this.cardsToDraw += 5
             default:
                 this.currentTurn = this.goingCW ? cw : ccw
                 break;
