@@ -88,6 +88,13 @@ class Game {
 
     //Checks the validity of the cards in a players hand
     SetValidMoves() {    
+        //invalidate old moves
+        for (let i = 0; i < this.playerCards.length; i++) {
+            for (let j = 0; j < this.playerCards[i].length; j++) {
+                this.playerCards[i][j].isValidMove = false
+            }
+        }
+        
         for (let i = 0; i < this.playerCards[this.currentTurn - 1].length; i++) {
             this.playerCards[this.currentTurn - 1][i].isValidMove = this.CheckValidMove(this.playerCards[this.currentTurn - 1][i])
         }

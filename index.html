@@ -92,26 +92,27 @@
             $('#start').click(() => {
                 socket.emit('start-game', lobbyID);
             });
-
+            //fix
             $('#draw').click(() => {
-                if (gs.playerCards[playerNumber - 1].length > 0){
-                    if (gs.cardsToDraw > 0)
-                        socket.emit('draw-card', {
-                            lobbyID: lobbyID,
-                            pIndex: playerNumber - 1
-                        });
-                    else {
-                        socket.emit('draw-card', {
-                            lobbyID: lobbyID,
-                            pIndex: playerNumber - 1
-                        });
-                        socket.emit('end-turn', lobbyID);
+                if (currentTurn == playerNumber) {
+                    if (gs.playerCards[playerNumber - 1].length > 0){
+                        if (gs.cardsToDraw > 0)
+                            socket.emit('draw-card', {
+                                lobbyID: lobbyID,
+                                pIndex: playerNumber - 1
+                            });
+                        else {
+                            socket.emit('draw-card', {
+                                lobbyID: lobbyID,
+                                pIndex: playerNumber - 1
+                            });
+                            socket.emit('end-turn', lobbyID);
+                        }
                     }
                 }
-
             });
             $('#endTurn').click(() => {
-                if(currentTurn == playerNumber)
+                if(currentTurn == playerNumber && gs.cardsToDraw == 0)
                     socket.emit('end-turn', lobbyID);
             });
         })   
