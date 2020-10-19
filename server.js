@@ -86,6 +86,11 @@ io.on('connection', (socket) => {
         io.to(lobbyID).emit("update", games[lobbyID.toString()])
     })
 
+    socket.on("end-turn", (data) => {
+        games[lobbyID.toString()].EndTurn()
+        io.to(lobbyID).emit("update", games[lobbyID.toString()])
+    })
+
     //socket.on("make-move", (data) => {
         
     //})
