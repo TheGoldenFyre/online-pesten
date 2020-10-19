@@ -17,7 +17,7 @@
         <img id="topImg" src="">
     </div>
     <h3>Current turn: </h3>
-    <button id="start">Start</button><button id="draw">Draw Card</button>
+    <button id="start">Start</button><button id="draw">Draw Card</button><button id="endTurn">End Turn</button>
     <table>
         <tr>
             <td>Cards: </td>
@@ -44,7 +44,6 @@
                     "width": '167',
                 })
 
-                console.log({x: (card.value <= 13) ? card.value * 167 : 0, y: card.suit * 234})
                 if (currentTurn == playerNumber) {
                     $(`#card${i}`).click(() => {
                         socket.emit("try-move", {
@@ -99,6 +98,10 @@
                     lobbyID: lobbyID,
                     pIndex: playerNumber - 1
                 });
+            });
+            $('#draw').click(() => {
+                if(currentTurn == playerNumber)
+                    socket.emit('end-turn', lobbyID);
             });
         })   
     </script>

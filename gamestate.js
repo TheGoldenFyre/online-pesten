@@ -42,13 +42,15 @@ class Game {
     }
 
     Start() {
+        this.cards = this.SetupCards()
+
         let pCards = []
         for (let i = 0; i < this.playerCount; i++) {
             pCards.push(this.cards.splice(0, this.startingCards))
         }
         this.playerCards = pCards
-
-        this.stack.push(this.cards[this.cards.length - 1])
+        this.stack = []
+        this.stack.push(this.cards.splice(0,1)[0])
     }
 
     Move(player, index) {
@@ -130,6 +132,20 @@ class Game {
         return arr
     }
 
+    EndTurn() {
+        let cw, ccw;
+        if (this.currentTurn + 1 > this.playerCount)
+            cw = 1
+        else 
+            cw = this.currentTurn + 1
+        if (this.currentTurn - 1 < 1)
+            ccw = this.playerCount
+        else 
+            ccw = this.currentTurn - 1
+
+        this.currentTurn = this.goingCW ? cw : ccw
+    }
+
     nextTurn(card) {
         let cw, ccw;
             if (this.currentTurn + 1 > this.playerCount)
@@ -170,6 +186,9 @@ class Game {
                 }
             case 1:
                 this.goingCW = !this.goingCW
+                if (this.playerCount == 2) {
+                    break;
+                }
             default:
                 this.currentTurn = this.goingCW ? cw : ccw
                 break;
