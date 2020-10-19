@@ -16,7 +16,7 @@
         <h2>Current top: </h2> 
         <img id="topImg" src="">
     </div>
-    <h3>Current turn: </h3>
+    <h3 id="cTurn">Current turn: </h3><h3 id="cToDraw"></h3>
     <button id="start">Start</button><button id="draw">Draw Card</button><button id="endTurn">End Turn</button>
     <table>
         <tr>
@@ -46,13 +46,14 @@
 
                 if (currentTurn == playerNumber) {
                     $(`#card${i}`).click(() => {
-                        socket.emit("try-move", {
-                            lobbyID: lobbyID,
-                            pCard: card,
-                            sCard: gs.stack[gs.stack.length - 1],
-                            index: i,
-                            pIndex: playerNumber - 1,
-                        })
+                        if (gs.cardsToDraw < 1)
+                            socket.emit("try-move", {
+                                lobbyID: lobbyID,
+                                pCard: card,
+                                sCard: gs.stack[gs.stack.length - 1],
+                                index: i,
+                                pIndex: playerNumber - 1,
+                            })
                     })
                 }
             })
@@ -61,8 +62,9 @@
 
             let c = gs.stack[gs.stack.length - 1]
             $("h2").text(`Current top: ${c.value} of ${c.suitString}s`)
+            $("#cToDraw").text((gs.cardsToDraw > 0) ? `Cards to draw: ${gs.cardsToDraw}` : ``)
             $("#topImg").attr("src", `../${c.suit}-${c.value}.png`);
-            $("h3").text(`Current turn: ${gs.currentTurn}`)
+            $("#cTurn").text(`Current turn: ${gs.currentTurn}`)
         }
 
         $(document).ready(() => {
@@ -94,10 +96,21 @@
             });
 
             $('#draw').click(() => {
-                socket.emit('draw-card', {
-                    lobbyID: lobbyID,
-                    pIndex: playerNumber - 1
-                });
+                if (gs.playerCards[playerNumber - 1].length > 0){
+                    if (gs.cardsToDraw > 0)
+                        socket.emit('draw-card', {
+                            lobbyID: lobbyID,
+                            pIndex: playerNumber - 1
+                        });
+                    else {
+                        socket.emit('draw-card', {
+                            lobbyID: lobbyID,
+                            pIndex: playerNumber - 1
+                        });
+                        socket.emit('end-turn', lobbyID);
+                    }
+                }
+
             });
             $('#endTurn').click(() => {
                 if(currentTurn == playerNumber)

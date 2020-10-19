@@ -77,8 +77,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on("draw-card", (data) => {
-        games[data.lobbyID.toString()].GetCard(1, data.pIndex)
-        io.to(data.lobbyID).emit("update", games[data.lobbyID.toString()])
+        let gs = games[data.lobbyID.toString()]
+        gs.GetCard(1, data.pIndex)
+        if (gs.cardsToDraw > 0) {
+            gs.cardsToDraw--
+        }
+        io.to(data.lobbyID).emit("update", gs)
     })
 
     socket.on("start-game", (lobbyID) => {
