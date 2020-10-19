@@ -45,7 +45,7 @@
                 })
 
                 $(`#card${i}`).click(() => {
-                    if (gs.cardsToDraw < 1 && card.isValidMove == true)
+                    if (card.isValidMove == true)
                         socket.emit("do-move", {
                             lobbyID: lobbyID,
                             pCard: card,
