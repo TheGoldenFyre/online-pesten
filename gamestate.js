@@ -80,8 +80,12 @@ class Game {
     CheckValidMove(card) {
         let b = false
         for (let i = 0; i < this.gameRules.length; i++) {
-            if (this.gameRules[i](card, this.stack[this.stack.length - 1]))
-                b = true
+            let c = this.gameRules[i](card, this.stack[this.stack.length - 1], this.cardsToDraw)
+
+            if (c == "valid")
+                b = true;
+            else if (c == "invalid-now") 
+                return false
         }
         return b
     }
@@ -104,68 +108,73 @@ class Game {
     SetupGameRules() {
         let arr = []
 
-        arr.push(function (pCard, sCard) {
-            if (this.cardsToDraw > 0) {
+        //Allows for skipping and rotating of cards
+        arr.push(function (pCard, sCard, cards) {
+            if (cards > 0) {
                 if (sCard.value == 1 || sCard.value == 2 || sCard.value == 14) {
                     if (pCard.value == 1 || pCard.value == 2 || pCard.value == 14) {
-                        return true;
+                        return "valid";
+                    } else{
+                        console.log("vvbvv")
+                        return "invalid-now"
                     }
+                } else {
+                    console.log("aaaa")
+                    return "invalid-now"
                 }
             }
-
-            return false
         })
 
         //Matching suits
         arr.push(function (pCard, sCard) {
             if (pCard.suit == sCard.suit) { 
-                return true;
+                return "valid";
             }
-            return false
+            return "invalid"
         })
 
         //Matching numbers
         arr.push(function (pCard, sCard) {
             if (pCard.value == sCard.value) { 
-                return true;
+                return "valid";
             }
         })
 
         //Jack on everything
         arr.push(function (pCard, sCard) {
             if (pCard.value == 11) { 
-                return true;
+                return "valid";
             }
-            return false
+            return "invalid"
         })
 
         //Joker on everything & everything on joker
         arr.push(function(pCard, sCard) {
             if (pCard.suit == 4 || sCard.suit == 4) {
-                return true
+                return "valid"
             }
-            return false    
+            return "invalid"    
         })
 
         //2's, aces and jokers are allowed to be played on top of each other
         arr.push(function(pCard, sCard) {
             //2 on...
             if ( (pCard.value == 2 && sCard.value == 1 ) || (pCard.value == 2 && sCard.suit == 4) ) {
-                return true
+                return "valid"
             }
                 
             //ace on...
             if ( (pCard.value == 1 && sCard.value == 2 ) || (pCard.value == 1 && sCard.suit == 4) ) {
-                return true
+                return "valid"
             }
                 
             //joker on...
             if ( (pCard.suit == 4 && sCard.value == 2 ) || (pCard.suit == 4 && sCard.value == 1) ) {
-                return true
+                return "valid"
             }
                 
 
-            return false
+            return "invalid"
         })
 
         return arr
@@ -201,44 +210,50 @@ class Game {
         switch(card.value) {
             case 7:
             case 13:
-                break;
+                return;
             case 8:
                 if(this.playerCount == 2) {
-                    break
+                    return
                 } else {
                     if (this.goingCW) {
                         if (this.currentTurn + 1 == this.playerCount) {
                             this.currentTurn = 1
+                            return
                         }
                         else if (this.currentTurn + 2 > this.playerCount) {
                             this.currentTurn = 2
+                            return
                         } else {
                             this.currentTurn += 2
+                            return
                         }
                     } else {
                         if (this.currentTurn == 1) {
                             this.currentTurn = this.playerCount - 1
+                            return
                         } else if (this.currentTurn == 2) {
                             this.currentTurn = this.playerCount
+                            return
                         } else {
                             this.currentTurn -= 2
+                            return
                         }
                     }
                 }
             case 1:
                 this.goingCW = !this.goingCW
-                if (this.playerCount == 2) {
-                    break;
+                if (this.playerCount == 2 && this.cardsToDraw == 0) {
+                    return;
                 }
             //Handles jokers and 2s
             case 2:
-                this.cardsToDraw += 2
+                this.cardsToDraw += 2;
+                break;
             case 14:
-                this.cardsToDraw += 5
-            default:
-                this.currentTurn = this.goingCW ? cw : ccw
+                this.cardsToDraw += 5;
                 break;
         }
+        this.currentTurn = this.goingCW ? cw : ccw
     }
 
     GetCard(count, player) {

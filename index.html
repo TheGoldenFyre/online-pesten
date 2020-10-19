@@ -37,7 +37,7 @@
             currentTurn = gs.currentTurn
 
             gs.playerCards[playerNumber - 1].forEach((card, i) => {
-                $("tr").append(`<td id="card${i}"><img src="../${card.suit}-${card.value}.png">${card.value}${card.suitString}</td>`)
+                $("tr").append(`<td id="card${i}"><img src="../${card.suit}-${card.value}.png">${card.value}${card.suitString}${card.isValidMove ? "Valid" : ""}</td>`)
                     
                 $(`#card${i}`).css({
                     "height": "234", 
