@@ -98,7 +98,7 @@ class Game {
         let arr = []
 
         arr.push(function (pCard, sCard) {
-            if (cardsToDraw > 0) {
+            if (this.cardsToDraw > 0) {
                 if (sCard.value == 1 || sCard.value == 2 || sCard.value == 14) {
                     if (pCard.value == 1 || pCard.value == 2 || pCard.value == 14) {
                         return true;
