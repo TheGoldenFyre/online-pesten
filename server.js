@@ -74,6 +74,7 @@ io.on('connection', (socket) => {
         if (gs.cardsToDraw > 0) {
             gs.cardsToDraw--
         }
+        games[li].SetValidMoves()
         io.to(data.lobbyID).emit("update", gs)
     })
 
@@ -84,6 +85,7 @@ io.on('connection', (socket) => {
 
     socket.on("end-turn", (lobbyID) => {
         games[lobbyID.toString()].EndTurn()
+        games[li].SetValidMoves()
         io.to(lobbyID).emit("update", games[lobbyID.toString()])
     })
 
