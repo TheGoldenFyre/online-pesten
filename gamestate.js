@@ -90,7 +90,6 @@ class Game {
     SetValidMoves() {    
         for (let i = 0; i < this.playerCards[this.currentTurn - 1].length; i++) {
             this.playerCards[this.currentTurn - 1][i].isValidMove = this.CheckValidMove(this.playerCards[this.currentTurn - 1][i])
-            console.log(this.currentTurn - 1)
         }
     }
 
