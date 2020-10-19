@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
 
         games[li].nextTurn(data.pCard, data.cTurn)
         games[li].Move(data.pIndex, data.index)
-        games[li].setValidMoves()
+        games[li].SetValidMoves()
         io.to(li).emit("update", games[li])
     })
 
