@@ -245,6 +245,7 @@ class Game {
                 if (this.playerCount == 2 && this.cardsToDraw == 0) {
                     return;
                 }
+                break;
             //Handles jokers and 2s
             case 2:
                 this.cardsToDraw += 2;
