@@ -115,11 +115,9 @@ class Game {
                     if (pCard.value == 1 || pCard.value == 2 || pCard.value == 14) {
                         return "valid";
                     } else{
-                        console.log("vvbvv")
                         return "invalid-now"
                     }
                 } else {
-                    console.log("aaaa")
                     return "invalid-now"
                 }
             }
